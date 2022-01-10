@@ -91,3 +91,38 @@ class Book(models.Model):
     _sql_constraints = [
         ('number_unig', 'unique (number)', """Only one number can be defined for each book!""")
     ]
+
+    def action_on_hand(self):
+        return {
+            'name': _('On Hand %s') % self.name,
+            'view_mode': 'form',
+            'res_model': 'library.wizard.on_hand',
+            'type': 'ir.actions.act_window',
+            'target': 'new'
+        }
+
+    def action_on_shelf(self):
+        last_history = self.history_ids[-1]
+        if last_history:
+            last_history.write({
+                'date_on_shelf': fields.Datetime.now()
+            })
+        self.write({
+            'status': 'on_shelf',
+            'partner_id': False
+        })
+
+    def _cron_overdue_book_notification(self):
+        today = fields.Date.today()
+        overdue_books = self.env['library.book'].search([
+            ('status', '=', 'on_hand'),
+            ('due_date', '<', today),
+            ('overdue_notification_date', '!=', today)
+        ])
+        for book in overdue_books:
+            body = '%s пожалуйста верните книгу %s' % (book.partner_id.name, book.name)
+            subtype = self.env.ref('mail.mt_comment')
+            book.message_post(body=body, partner_ids=book.partner_id.ids, message_type='comment', subtype_id=subtype.id)
+            book.write({
+                'overdue_notification_date': fields.Datetime.now()
+            })
