@@ -25,7 +25,9 @@ class WizardOnHand(models.TransientModel):
             'due_date': self.due_date,
         })
 
-    # @api.constrains('due_date')
-    # def constrain_due_date(self):
-    #     if self.due_date <= fields.Date.today():
-    #         raise ValidationError('Вы не можете выбрать такую дату')
+    @api.constrains('due_date')
+    def constrain_due_date(self):
+        if self.due_date <= fields.Date.today():
+            raise ValidationError('Вы не можете выбрать такую дату')
+
+# https://github.com/OlgaGorbenko/academy/tree/15.0-OlgaG-library https://github.com/OlgaGorbenko/academy.git
