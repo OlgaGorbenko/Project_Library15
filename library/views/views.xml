@@ -14,21 +14,26 @@
       </field>
     </record>
 
-    <!-- form view for books -->
+<!-- form view for books -->
     <record model="ir.ui.view" id="book_form_view">
       <field name="name">books.form.view</field>
       <field name="model">library.book</field>
       <field name="arch" type="xml">
         <form>
           <header>
-<!--            <button name="action_in_progress" string="In Progress" class="oe_highlight" type="object"/> # attrs...-->
-            <field name="status" widget="statusbar" statusbar_visible="on_shelf, on_hand"/>
+            <button name="action_on_hand" string="On Hand" class="oe_highlight" type="object" attrs="{'invisible': [('status', 'in', ['on_hand', 'unavailable'])]}"/>
+            <button name="action_on_shelf" string="On Shelf" class="oe_highlight" type="object" attrs="{'invisible': [('status', 'in', ['on_shelf', 'unavailable'])]}"/>
+            <field name="status" widget="statusbar" statusbar_visible="on_shelf,on_hand"/>
           </header>
           <sheet>
-<!--            <div class="oe_button_box" name="button_box">-->
-<!--              <button name="action_in_progress" type="object" class="oe_stat_button" icon="fa-calendar"/>-->
-<!--              </button>-->
-<!--            </div>-->
+            <!--            <div class="oe_button_box" name="button_box">-->
+            <!--                <button name="action_in_progress" type="object" class="oe_stat_button" icon="fa-calendar">-->
+            <!--                    <div class="o_stat_info">-->
+            <!--                        <field name="value" class="o_stat_value"/>-->
+            <!--                        <span class="o_stat_text"> Meeting</span>-->
+            <!--                    </div>-->
+            <!--                </button>-->
+            <!--            </div>-->
             <div class="oe_title">
               <label for="name"/>
               <h1><field class="o_text_overflow" name="name" placeholder="e.g. Harry Potter"/></h1>
@@ -51,6 +56,16 @@
               <page string="Description">
                 <field name="description"/>
               </page>
+              <page string="History">
+                <field name="history_ids"  options="{'no_open': True}">
+                  <tree create="false" delete="false" edit="false" default_order="id desc">
+                    <field name="partner_id"/>
+                    <field name="date_on_hand"/>
+                    <field name="date_on_shelf"/>
+                    <field name="due_date"/>
+                  </tree>
+                </field>
+              </page>
             </notebook>
           </sheet>
           <div class="oe_chatter">
@@ -61,14 +76,21 @@
       </field>
     </record>
 
-        <!-- form view for books info -->
     <record model="ir.ui.view" id="book_info_form_view">
       <field name="name">books.form.view</field>
       <field name="model">library.book.info</field>
       <field name="arch" type="xml">
         <form>
-         <sheet>
-           <div class="oe_title">
+          <sheet>
+            <!--            <div class="oe_button_box" name="button_box">-->
+            <!--                <button name="action_in_progress" type="object" class="oe_stat_button" icon="fa-calendar">-->
+            <!--                    <div class="o_stat_info">-->
+            <!--                        <field name="value" class="o_stat_value"/>-->
+            <!--                        <span class="o_stat_text"> Meeting</span>-->
+            <!--                    </div>-->
+            <!--                </button>-->
+            <!--            </div>-->
+            <div class="oe_title">
               <label for="name"/>
               <h1><field class="o_text_overflow" name="name" placeholder="e.g. Harry Potter"/></h1>
             </div>
@@ -77,7 +99,7 @@
                 <field name="author_id"/>
                 <field name="lang_id"/>
                 <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
-                </group>
+              </group>
             </group>
             <notebook>
               <page string="Description">

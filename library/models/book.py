@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from random import randint
 
-from odoo import models, fields
+from odoo import models, fields, _
 
 
 class Author(models.Model):
@@ -51,6 +51,7 @@ class History(models.Model):
     partner_id = fields.Many2one('res.partner')
     date_on_hand = fields.Date()
     date_on_shelf = fields.Date()
+    due_date = fields.Date()
 
 
 class BookInfo(models.Model):
@@ -80,13 +81,15 @@ class Book(models.Model):
         ('on_shelf', 'On Shelf'),
         ('on_hand', 'On Hand'),
         ('unavailable', 'Unavailable'),
-    ], default='on_shelf')
+    ], default='on_self')
     partner_id = fields.Many2one('res.partner')
     history_ids = fields.One2many('library.history', 'book_id')
     tag_ids = fields.Many2many(related='book_id.tag_ids')
     publishing_house = fields.Many2one('res.partner')
-    image = fields.Image(string='Image', max_width=256, max_height=256)
+    image = fields.Image(string="Image", max_width=256, max_height=256)
     description = fields.Text(related='book_id.description')
+    due_date = fields.Date()
+    overdue_notification_date = fields.Date()
 
     _sql_constraints = [
         ('number_unig', 'unique (number)', """Only one number can be defined for each book!""")
@@ -120,7 +123,7 @@ class Book(models.Model):
             ('overdue_notification_date', '!=', today)
         ])
         for book in overdue_books:
-            body = '%s пожалуйста верните книгу %s' % (book.partner_id.name, book.name)
+            body = '%s Пожалуйста, верните книгу. %s' % (book.partner_id.name, book.name)
             subtype = self.env.ref('mail.mt_comment')
             book.message_post(body=body, partner_ids=book.partner_id.ids, message_type='comment', subtype_id=subtype.id)
             book.write({
