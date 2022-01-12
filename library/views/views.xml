@@ -9,6 +9,7 @@
                     <field name="name"/>
                     <field name="author_id"/>
                     <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
+                    <field name="tag2_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                     <field name="status"/>
                 </tree>
             </field>
@@ -91,7 +92,7 @@
                     <field name="active" invisible="1"/>
                     <field name="number"/>
                     <field name="book_id"/>
-                </field>
+               </field>
                 <xpath expr="//notebook/page[@id='description']" position="after">
                     <page string="History">
                         <field name="history_ids" options="{'no_open': True}">
@@ -110,6 +111,7 @@
                 <xpath expr="//group/group" position="after">
                     <group string="Client">
                         <field name="partner_id"/>
+                        <field name="image" widget="image"/>
                     </group>
                 </xpath>
             </field>
